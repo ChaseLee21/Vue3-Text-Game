@@ -6,11 +6,63 @@
         <link rel="stylesheet" href="assets/style.css">
     </head>
     <body>
-        <h1>Hello World</h1>
-        <!-- Content goes here -->
+        <div id="app">
+            <main v-if="started">
+                <header>
+                    <h1 id="title">{{ title }}</h1>
+                </header>
+                <section>
+                    <div id="enemyBoard">
+                        <div v-for="(enemy) in currentEnemies"> 
+                            <div class="enemy" @click="attackEnemy(enemy)">
+                                <h2>{{ enemy.name }}</h2>
+                                <div v-for="(stat, name) in enemy.stats">
+                                    <p>{{name}}: {{stat}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div id="character">
+                    <section id="map">
+                        <h2>Map</h2>
+                        <pre>
+                            {{ map }}
+                        </pre>
+                    </section>
+                    <section id="main">
+                        <h2> {{character.name}} </h2>
+                        <div v-for="(stat, name) in character.stats">
+                            <p><span>{{ name }}: </span><span>{{ stat }}</span></p>
+                        </div>
+                    </section>
+                    <section id="inv">
+                        <h2>Inventory</h2>
+                        <div class="invItem" v-for="(item) in character.inventory">
+                            <h3>{{ item.name }}</h3> 
+                            <p v-for="(itemProperty, name) of item">
+                                <span v-if="name != 'name'">{{ name }}: </span><span v-if="name != 'name'">{{ itemProperty }}</span>
+                            </p>
+                        </div>
+                    </section>
+                </div>
+                <section>
+                    <div id="log">
+                        <div v-for="message in log">
+                            <p>{{ message }}</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <div id="startScreen" v-else>
+                <header>
+                    <h1> {{ title }} </h1>
+                    <button @click="startGame">Start Game</button>
+                </header>
+            </div>
+        </div>
+
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="assets/script.js"></script>
     </body>
-</html>
-    
-  </body>
 </html>

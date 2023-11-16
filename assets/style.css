@@ -1,3 +1,99 @@
+:root {
+    --bg-color: rgb(53, 53, 53);
+    --text-color: rgb(255, 255, 255);
+    --card-color: #fff;
+    --card-text-color: #000;
+    --border-color: var(--text-color);
+    --border: 3px solid var(--border-color);
+    --border-radius: 10px;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-size: 10px;
+    margin: 0;
+}
+
 h1 {
-    color: red;
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+p {
+    font-size: 1.2rem;
+}
+
+pre {
+    font-size: 1rem;
+}
+
+body header {
+    text-align: center;
+    color: var(--text-color);
+}
+
+body header button {
+    background-color: var(--card-color);
+    color: var(--card-text-color);
+    border: var(--border);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin: 1rem;
+    font-size: 1.5rem;
+
+}
+
+#enemyBoard {
+    width: 100vw;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+.enemy {
+    border: var(--border);
+    border-radius: var(--border-radius);
+    color: var(--card-text-color);
+    background-color: var(--card-color);
+    margin: 1rem;
+    padding: 1rem;
+}
+
+#character {
+    width: 100vw;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    margin: 0;
+}
+
+#character section {
+    border: var(--border);
+    border-radius: var(--border-radius);
+    color: var(--card-text-color);
+    background-color: var(--card-color);
+    width: 30%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.enemy h2,
+#character section h2 {
+    text-align: center;
+    margin: 0;
+    border-bottom: 1px dotted #000;
+}
+
+#log {
+    text-align: center;
+    color: var(--text-color);
+    display: flex;
+    flex-flow: column wrap;
 }
