@@ -36,8 +36,7 @@ const app = Vue.createApp({
                     },
                 ],
             },
-            log: [
-            ],
+            log: [],
         }
     },
     mounted: function() {
@@ -51,7 +50,6 @@ const app = Vue.createApp({
             }
             this.started = true;
             this.character.stats.Attack = this.calculateCharacterAttack();
-            console.log(this.character.stats.Attack);
             this.log.push("Welcome to the game!");
             this.currentEnemies.push(this.enemies[0]);
             this.title = "Room 1"
@@ -154,7 +152,8 @@ const app = Vue.createApp({
             }
 
             function createRooms() {
-                //gets the possible rooms from the current position
+                //gets the possible rooms from the current position and sends them to validateRooms()
+                //TODO: combine getPossibleRooms() and validateRooms() into one function that returns an array of valid rooms
                 let validRooms = validateRooms(getPossibleRooms(currentPos)); // return an array of valid rooms
 
                 if (validRooms.length > 0) {
@@ -221,9 +220,9 @@ const app = Vue.createApp({
         },
         attackEnemy(enemy) {
             enemy.stats.Health -= this.character.stats.Attack;
-            this.log.push(`${this.character.name} attacked ${enemy.name} for ${this.character.stats.Attack} damage!`);
+            this.log.unshift(`${this.character.name} attacked ${enemy.name} for ${this.character.stats.Attack} damage!`);
             if (enemy.stats.Health <= 0) {
-                this.log.push(`${enemy.name} died!`);
+                this.log.unshift(`${enemy.name} died!`);
                 this.currentEnemies.splice(this.currentEnemies.indexOf(enemy), 1);
             } else {
                 this.attackCharacter(enemy);
@@ -231,9 +230,9 @@ const app = Vue.createApp({
         },
         attackCharacter(enemy) {
             this.character.stats.Health -= enemy.stats.Attack;
-            this.log.push(`${enemy.name} attacked ${this.character.name} for ${enemy.stats.Attack} damage!`);
+            this.log.unshift(`${enemy.name} attacked ${this.character.name} for ${enemy.stats.Attack} damage!`);
             if (this.character.stats.Health <= 0) {
-                this.log.push(`${this.character.name} died!`);
+                this.log.unshift(`${this.character.name} died!`);
                 this.started = false;
                 //TODO: add game over screen
             }
