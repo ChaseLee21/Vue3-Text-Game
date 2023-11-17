@@ -56,157 +56,173 @@ const app = Vue.createApp({
             //TODO: add initial map
         },
         initializeMap() {
-            //TODO: add map initialization
-            //the map will have a start point and an end point with a minimum number of rooms in between
-            //the player will be able to see the rooms they have already visited on the map
-            //the player will not be able to see the rooms they have not visited on the map
-            //the player will be able to see the room they are currently in on the map and the rooms adjacent to it
-            //the room positions will be randomly generated but the map will always be solvable
-            //the user navigates the map by moving from room to room
-            //in each room the player will be able to choose which direction to go only if there is a room in that direction
-            //the map will be pre generated but randomly generated each time the game is started
-            //the map will be a 2d array
-
             //local variables
             let map = [];
             let currentPos = [];
-            let lastPos = [];
-            let possibleRooms = [];
             let startPoint = [9, Math.floor(Math.random() * 10)];
             let endPoint = [0, Math.floor(Math.random() * 10)];
-            let adjacentEndPoints = [];
             let roomCount = 0;
             let endPointReached = false;
-            let firstRoomInFinalRow = true;
-            let closestRoom = null;
+            let firstRoomInFinalRow = null;
+            let finalRow = false;
 
-            //function definitions
-            function getPossibleRooms(pos) {
-                //using the passed position, checks rooms adjacent to it and returns an array of rooms that are not already rooms
-                let y = pos[0];
-                let x = pos[1];
-                let adjacentRooms = [];
-                let rooms = [];
-                //check above
-                if (y > 0) {
-                    adjacentRooms.push([y-1, x]);
+            function findRooms(pos) {
+                if (endPointReached) return [endPoint]; //ends function and returns the end room
+                let y = pos[0]; //y coordinate of current position
+                let x = pos[1]; //x coordinate of current position
+                let rooms = []; //array of rooms that will be returned 
+                if (y > 0) { //checks if there is a room above the current position
+                    rooms.push([y-1, x]);
                 }
-                //check to the left
-                if (x > 0) {
-                    adjacentRooms.push([y, x-1]);
+                if (x > 0) { //checks if there is a room to the left of the current position
+                    rooms.push([y, x-1]);
                 }
-                //check to the right
-                if (x < 9) {
-                    adjacentRooms.push([y, x+1]);
+                if (x < 9) { //checks if there is a room to the right of the current position
+                    rooms.push([y, x+1]);
                 }
-                //check to see if adjacent rooms are already rooms
-                for (let room of adjacentRooms) {
-                    if (map[room[0]][room[1]] == "x") {
-                        rooms.push(room);
-                    }
-                }
-                //return an array of adjacent rooms that match the criteria
-                return rooms;
-            }
-
-            function validateRooms(rooms) {
-                let validRooms = [];
-                for (let room of rooms) {
-                    let roomsInRow = 0;
-                    let y = room[0];
-                    let x = room[1];
-
-                    if ((x == endPoint[1] + 1 || x == endPoint[1] - 1 || x == endPoint[1]) && y == 0) { //checks if we have reached the end point
+                for (let room of rooms) { //itterates through the rooms array
+                    if (room[0] === endPoint[0] && room[1] === endPoint[1]) { //checks if the room is the end point
                         endPointReached = true;
-                        validRooms = [];
-                        validRooms.push(room);
-                        console.log("end point reached");
-                        return validRooms;
+                        return [endPoint]; //ends function and returns the end room
+                    } else if (map[room[0]][room[1]] != "x") { //checks if the room is empty
+                        removeRoom(rooms, room); //removes the room from the rooms array
                     }
+                }
+                //validates each room
+                for (let room of rooms) {
+                    let roomsAllowed = 2; //number of rooms allowed in each row (not including the end row)
+                    let roomy = room[0]; //y coordinate of room
+                    let roomx = room[1]; //x coordinate of room
 
-                    if (y == 0) { //runs if we are on the final row
-                        if (firstRoomInFinalRow) {
-                            closestRoom = room;
-                            validRooms.push(room);
-                            firstRoomInFinalRow = false;
-                        } else {
-                            if (Math.abs(x - endPoint[1]) < Math.abs(closestRoom[1] - endPoint[1])) {
-                                closestRoom = room;
-                                validRooms.push(room);
+                    if (roomy == 0) { //runs if we are on the final row
+                        if (!finalRow) { //runs the first time we are on the final row
+                            firstRoomInFinalRow = room;
+                            finalRow = true;
+                            return [room];
+                        } else { //runs every other time we are on the final row
+                            if (calculateDistance(room, endPoint) > calculateDistance(firstRoomInFinalRow, endPoint)) { //checks if the room is further from the end point than the first room in the final row
+                                removeRoom(rooms, room); //removes the room from the rooms array
                             }
                         }
                     } else { //runs if we are not on the final row
-                        for (let point of map[y]){
+                        for (let point of map[roomy]) {
                             if (point !== "x" && point !== "s" && point !== "e") {
-                                roomsInRow++;
-                            }
+                                roomsAllowed--;
+                            }  
                         }
-                        if (roomsInRow < 2) {
-                            validRooms.push(room);
+                        if (roomsAllowed == 0) { 
+                            removeRoom(rooms, room); //removes the room from the rooms array
                         }
                     }
                 }
-
-                //returns validRooms[]
-                return validRooms;
+                return rooms; //returns the rooms array
             }
 
             function createRooms() {
-                //gets the possible rooms from the current position and sends them to validateRooms()
-                //TODO: combine getPossibleRooms() and validateRooms() into one function that returns an array of valid rooms
-                let validRooms = validateRooms(getPossibleRooms(currentPos)); // return an array of valid rooms
+                let rooms = findRooms(currentPos);
 
-                if (validRooms.length > 0) {
-                    let room = validRooms[Math.floor(Math.random() * validRooms.length)];
+                if (rooms.length > 0 && !endPointReached) {
+                    let room = rooms[Math.floor(Math.random() * rooms.length)];
 
                     map[room[0]][room[1]] = roomCount.toString();
 
                     roomCount++;
 
-                    lastPos = currentPos;
-
                     currentPos = room;
 
-                    //calls the function again if the end point has not been reached
-                    if (!endPointReached) {
-                        createRooms();
-                    }
+                    createRooms();
 
+                } else if (rooms.length > 0 && endPointReached) {
+                    let room = rooms[0];
+                    map[room[0]][room[1]] = "end";
                 } else {
-                    //TODO: add backtracking
                     return;
                 }
             }
 
-            //Set the global map variable to a 2d array of 0s that is 10x10
-            for (let i = 0; i < 10; i++) {
-                map.push([]);
-                for (let j = 0; j < 10; j++) {
-                    map[i].push("x");
+            function removeRoom(Rooms, room) {
+                for (let i = 0; i < Rooms.length; i++) {
+                    if (Rooms[i] == room) {
+                        Rooms.splice(i, 1);
+                    }
+                }
+                return Rooms;
+            }
+
+            function calculateDistance(pos1, pos2) {
+                let y1 = pos1[0];
+                let x1 = pos1[1];
+                let y2 = pos2[0];
+                let x2 = pos2[1];
+                let distance = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+                return distance;
+            }
+
+            function createMap() {
+                map = [];
+                currentPos = [];
+                startPoint = [9, Math.floor(Math.random() * 10)];
+                 endPoint = [0, Math.floor(Math.random() * 10)];
+                 roomCount = 0;
+                 endPointReached = false;
+                 firstRoomInFinalRow = null;
+                 finalRow = false;
+                //Set the global map variable to a 2d array of 0s that is 10x10
+                for (let i = 0; i < 10; i++) {
+                    map.push([]);
+                    for (let j = 0; j < 10; j++) {
+                        map[i].push("x");
+                    }
+                }
+                //set start point to random position in last row
+                map[startPoint[0]][startPoint[1]] = "s";
+                //set end point to random position in first row
+                map[endPoint[0]][endPoint[1]] = "e";
+                //set current position to start position
+                currentPos = startPoint;
+                //generates the rooms from the start point to the end point
+                createRooms();
+            }
+            
+            function validateMap() {
+                let roomCount = 0;
+                //if (map has too many rooms) regenerate map
+                if (roomCount > 16) {
+                    console.log("too many rooms in map");
+                    createMap();
+                    validateMap();
+                }
+                //if (map end point never reached) regenerate map
+                if (endPointReached == false) {
+                    console.log("end point not reached");
+                    createMap();
+                    validateMap();
+                }
+                //if the amount of rooms on the same row as the end point is greater than 2 regenerate map
+                for (let point of map[endPoint[0]]) {
+                    console.log(point, map);
+                    if (point != "x") {
+                        roomCount++;
+                    }
+                }
+                if (roomCount > 2) {
+                    console.log("too many rooms on the same row as the end point");
+                    createMap();
+                    validateMap();
+                }
+                //logs the map to the console
+                console.log("---------MAP---------");
+                for (let i = 0; i < map.length; i++) {
+                    console.log(map[i]);
                 }
             }
 
-            //set start point to random position in last row
-            map[startPoint[0]][startPoint[1]] = "s";
+            //creates the blank map
+            createMap();
 
-            //set end point to random position in first row
-            map[endPoint[0]][endPoint[1]] = "e";
-
-            //set adjacent end points to adjacent rooms of the end point
-            adjacentEndPoints = getPossibleRooms(endPoint);
-
-            //set current position to start position
-            currentPos = startPoint;
-
-            //creates the rooms in the map
-            //TODO: add conditions to regenerate map if it is not solvable or too long
-            createRooms();
+            //validates map and regenerates if needed
+            validateMap();
             
-            //logs the map to the console
-            console.log("---------MAP---------");
-            for (let i = 0; i < map.length; i++) {
-                console.log(map[i]);
-            }
         },
         calculateCharacterAttack() {
             //TODO: refactor this for use with enemies as well
