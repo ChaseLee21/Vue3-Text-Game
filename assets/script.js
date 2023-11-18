@@ -6,6 +6,7 @@ const app = Vue.createApp({
             currentEnemies: [],
             enemyObjects: [],
             map: null,
+            mapDisplay: ``,
             character: {
                 name: "Hero",
                 stats: {
@@ -352,6 +353,9 @@ const app = Vue.createApp({
                     ],
                 }
             ];
+            for (let enemy of this.enemyObjects) {
+                enemy.alive = true;
+            }
         },
         generateRoomObjects() {
             this.roomObjects = [
@@ -658,20 +662,40 @@ const app = Vue.createApp({
             }
             this.roomObjects[15].position = this.roomCount - 1; //sets the final room's position to the final room
             rooms.push(this.roomObjects[15]); //adds the final room to the rooms array
-            for (let room of rooms) {
-                console.log(room);
-            }
+            // for (let room of rooms) {
+            //     console.log(room.name, room.position, room.enemies);
+            // }
             this.rooms = rooms;
         },
         setRoom(room) {
             this.title = room.name;
             this.currentEnemies = room.enemies;
+            console.log(room);
             this.updateMap(room.position);
             this.log.unshift(`You entered ${room.name}`);
         },
         updateMap(position) {
-            //TODO: implement this 
-            console.log("not yet implemented, updateMap() in script.js", position);
+            //changes position from number to letter for display if needed
+            if (position == 0) {
+                position = "s";
+            } else if (position == this.roomCount - 1) {
+                position = "e";
+            }
+            //updates the mapDisplay variable
+            this.mapDisplay = ``;
+            for (let i = 0; i < this.map.length; i++) {
+                this.mapDisplay += "\n";
+                for (let j = 0; j < this.map[i].length; j++) {
+                    if (this.map[i][j] == position) {
+                        this.mapDisplay += "O";
+                    }
+                    else if (this.map[i][j] != "x") {
+                        this.mapDisplay += "*";
+                    } else {
+                        this.mapDisplay += "x";
+                    }
+                }
+            }
         },
         calculateCharacterAttack() {
             //TODO: refactor this for use with enemies as well
@@ -685,11 +709,13 @@ const app = Vue.createApp({
         },
         attackEnemy(enemy) {
             enemy.stats.Health -= this.character.stats.Attack;
-            this.log.unshift(`${this.character.name} attacked ${enemy.name} for ${this.character.stats.Attack} damage!`);
-            if (enemy.stats.Health <= 0) {
+            if (enemy.alive == false) {
+                return;
+            } else if (enemy.stats.Health <= 0 && enemy.alive != false) {
                 this.log.unshift(`${enemy.name} died!`);
-                this.currentEnemies.splice(this.currentEnemies.indexOf(enemy), 1);
+                enemy.alive = false;
             } else {
+                this.log.unshift(`${this.character.name} attacked ${enemy.name} for ${this.character.stats.Attack} damage!`);
                 this.attackCharacter(enemy);
             }
         },
@@ -702,7 +728,23 @@ const app = Vue.createApp({
                 //TODO: add game over screen
             }
         },
-        
+        isRoomCompleted() {
+            if (this.currentEnemies.length == 0) {
+                console.log("room completed");
+                this.rooms.splice(0, 1);
+                this.setRoom(this.rooms[0]);
+            }
+        },
+        removeEnemy(enemy) {
+            this.currentEnemies.splice(this.currentEnemies.indexOf(enemy), 1);
+            this.isRoomCompleted();
+        },
+        lootItem(enemy, item) {
+            this.character.inventory.push(item);
+            enemy.inventory = [];
+            this.log.unshift(`${this.character.name} looted ${item.name}!`);
+            this.removeEnemy(enemy);
+        }
     }
 })
 app.mount('#app');

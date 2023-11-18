@@ -6,6 +6,10 @@
     --border-color: var(--text-color);
     --border: 3px solid var(--border-color);
     --border-radius: 10px;
+    --enemyItem-bg-color-change: #bbb;
+    --enemyItem-color-change: #000;
+    --enemy-bg-color-change: #5d0a0a;
+    --enemy-color-change: #bbb;
 }
 
 body {
@@ -32,6 +36,7 @@ p {
 
 pre {
     font-size: 1rem;
+    text-align: center;
 }
 
 body header {
@@ -64,6 +69,30 @@ body header button {
     background-color: var(--card-color);
     margin: 1rem;
     padding: 1rem;
+    text-align: center;
+}
+
+.enemy:hover {
+    transition: .5s;
+    background-color: var(--enemy-bg-color-change);
+    color: var(--enemy-color-change);
+    cursor: pointer;
+}
+
+.enemyItem {
+    transition: .5s;
+    text-align: center;
+    padding: .5rem;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+}
+
+.enemyItem:hover {
+    transition: .5s;
+    background-color: var(--enemyItem-bg-color-change);
+    color: var(--enemyItem-color-change);
+    cursor: pointer;
 }
 
 #character {
@@ -89,6 +118,19 @@ body header button {
     text-align: center;
     margin: 0;
     border-bottom: 1px dotted #000;
+}
+
+#character #inv .invItem {
+    transition: .5s;
+    text-align: start;
+    margin: .5rem;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
 }
 
 #log {

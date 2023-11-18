@@ -16,9 +16,13 @@
                         <div v-for="(enemy) in currentEnemies"> 
                             <div class="enemy" @click="attackEnemy(enemy)">
                                 <h2>{{ enemy.name }}</h2>
-                                <div v-for="(stat, name) in enemy.stats">
+                                <div v-if="enemy.alive" v-for="(stat, name) in enemy.stats">
                                     <p>{{name}}: {{stat}}</p>
                                 </div>
+                                <div v-else v-for="item in enemy.inventory">
+                                    <p class="enemyItem" @click="lootItem(enemy, item)">{{item.name}}</p>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -26,8 +30,8 @@
                 <div id="character">
                     <section id="map">
                         <h2>Map</h2>
-                        <pre>
-                            {{ map }}
+                        <pre v-if="mapDisplay">
+                            {{ mapDisplay }}
                         </pre>
                     </section>
                     <section id="main">
@@ -39,10 +43,7 @@
                     <section id="inv">
                         <h2>Inventory</h2>
                         <div class="invItem" v-for="(item) in character.inventory">
-                            <h3>{{ item.name }}</h3> 
-                            <p v-for="(itemProperty, name) of item">
-                                <span v-if="name != 'name'">{{ name }}: </span><span v-if="name != 'name'">{{ itemProperty }}</span>
-                            </p>
+                            <p v-for="(itemProperty, name) of item">{{ name }}: {{itemProperty}}</p>
                         </div>
                     </section>
                 </div>
