@@ -375,84 +375,84 @@ const app = Vue.createApp({
     },
     generateRoomObjects() {
       this.roomObjects = [
-        {
+        new Room(
           //0
-          name: "The Sewers",
-          enemies: [this.enemyObjects[1]],
-          positions: [0, 1, 2],
-        },
-        {
+          "The Sewers",
+          [this.enemyObjects[1]],
+          [0, 1, 2],
+        ),
+        new Room(
           //1
-          name: "The Dungeon",
-          enemies: [this.enemyObjects[3]],
-          positions: [1, 2, 3],
-        },
-        {
+          "The Dungeon",
+          [this.enemyObjects[3]],
+          [1, 2, 3],
+        ),
+        new Room(
           //2
-          name: "The Crypt",
-          enemies: [this.enemyObjects[2], this.enemyObjects[2]],
-          positions: [2, 3, 4],
-        },
-        {
+          "The Crypt",
+          [this.enemyObjects[2], this.enemyObjects[2]],
+          [2, 3, 4],
+        ),
+        new Room(
           //3
-          name: "The Caverns",
-          enemies: [
+          "The Caverns",
+          [
             this.enemyObjects[4],
             this.enemyObjects[4],
             this.enemyObjects[4],
           ],
-          positions: [3, 4, 5],
-        },
-        {
+          [3, 4, 5],
+        ),
+        new Room(
           //4
-          name: "The Catacombs",
-          enemies: [this.enemyObjects[2], this.enemyObjects[2]],
-          positions: [4, 5, 6],
-        },
-        {
+          "The Catacombs",
+          [this.enemyObjects[2], this.enemyObjects[2]],
+          [4, 5, 6],
+        ),
+        new Room(
           //5
-          name: "The Mines",
-          enemies: [this.enemyObjects[5]],
-          positions: [6, 7],
-        },
-        {
+          "The Mines",
+          [this.enemyObjects[5]],
+          [6, 7],
+        ),
+        new Room(
           //6
-          name: "The Ruins",
-          enemies: [
+          "The Ruins",
+          [
             this.enemyObjects[6],
             this.enemyObjects[6],
             this.enemyObjects[6],
           ],
-          positions: [5, 6, 7, 8],
-        },
-        {
+          [5, 6, 7, 8],
+        ),
+        new Room(
           //7
-          name: "The Temple",
-          enemies: [this.enemyObjects[7]],
-          positions: [6, 7, 8, 9],
-        },
-        {
+          "The Temple",
+          [this.enemyObjects[7]],
+          [6, 7, 8, 9],
+        ),
+        new Room(
           //8
-          name: "The Castle",
-          enemies: [this.enemyObjects[8], this.enemyObjects[8]],
-          positions: [7, 8, 9],
-        },
-        {
+          "The Castle",
+          [this.enemyObjects[8], this.enemyObjects[8]],
+          [7, 8, 9],
+        ),
+        new Room(
           //9
-          name: "The Goblin Fortress",
-          enemies: [
+          "The Goblin Fortress",
+          [
             this.enemyObjects[6],
             this.enemyObjects[6],
             this.enemyObjects[6],
             this.enemyObjects[6],
             this.enemyObjects[9],
           ],
-          positions: [9, 10, 11],
-        },
-        {
+          [9, 10, 11],
+        ),
+        new Room(
           //10
-          name: "The Bandit's Tower",
-          enemies: [
+          "The Bandit's Tower",
+          [
             this.enemyObjects[11],
             this.enemyObjects[3],
             this.enemyObjects[3],
@@ -460,66 +460,66 @@ const app = Vue.createApp({
             this.enemyObjects[3],
             this.enemyObjects[3],
           ],
-          positions: [9, 10, 11],
-        },
-        {
+          [9, 10, 11],
+        ),
+        new Room(
           //11
-          name: "The Spider's Nest",
-          enemies: [this.enemyObjects[12]],
-          positions: [10, 11],
-        },
-        {
+          "The Spider's Nest",
+          [this.enemyObjects[12]],
+          [10, 11],
+        ),
+        new Room(
           //12
-          name: "The Demonic Village",
-          enemies: [this.enemyObjects[13], this.enemyObjects[13]],
-          positions: [7, 8, 9],
-        },
-        {
+          "The Demonic Village",
+          [this.enemyObjects[13], this.enemyObjects[13]],
+          [7, 8, 9],
+        ),
+        new Room(
           //13
-          name: "The Overgrown Garden",
-          enemies: [this.enemyObjects[14]],
-          positions: [5, 6, 7, 8, 9],
-        },
-        {
+          "The Overgrown Garden",
+          [this.enemyObjects[14]],
+          [5, 6, 7, 8, 9],
+        ),
+        new Room(
           //14
-          name: "The Abandoned Village",
-          enemies: [this.enemyObjects[15]],
-          positions: [3, 4, 5, 6, 7],
-        },
-        {
+          "The Abandoned Village",
+          [this.enemyObjects[15]],
+          [3, 4, 5, 6, 7],
+        ),
+        new Room(
           //15
-          name: "The Showdown",
-          enemies: [this.enemyObjects[16]],
-          positions: [12],
-        },
-        {
+          "The Showdown",
+          [this.enemyObjects[16]],
+          [12],
+        ),
+        new Room(
           //16
-          name: "The Eternal Battlefield",
-          enemies: [this.enemyObjects[17], this.enemyObjects[17]],
-          positions: [11],
-        },
-        {
+          "The Eternal Battlefield",
+          [this.enemyObjects[17], this.enemyObjects[17]],
+          [11],
+        ),
+        new Room(
           //17
-          name: "The Lava Pits",
-          enemies: [this.enemyObjects[18]],
-          positions: [11],
-        },
-        {
+          "The Lava Pits",
+          [this.enemyObjects[18]],
+          [11],
+        ),
+        new Room(
           //18
-          name: "A Suspicious Looking Evil Lair That You Should Probably Not Enter But You Do Anyway Because You Are A Hero And That Is What Heroes Do",
-          enemies: [
+          "A Suspicious Looking Evil Lair That You Should Probably Not Enter But You Do Anyway Because You Are A Hero And That Is What Heroes Do",
+          [
             this.enemyObjects[0],
             this.enemyObjects[0],
             this.enemyObjects[0],
           ],
-          positions: [11],
-        },
-        {
+          [11],
+        ),
+        new Room(
           //19
-          name: "The Evil Sorcerer's Castle",
-          enemies: [this.enemyObjects[19]],
-          positions: [11],
-        },
+          "The Evil Sorcerer's Castle",
+          [this.enemyObjects[19]],
+          [11],
+        ),
       ];
       for (let room of this.roomObjects) {
         room.selected = false;

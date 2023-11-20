@@ -70,6 +70,7 @@ body header button {
     margin: 1rem;
     padding: 1rem;
     text-align: center;
+    user-select: none;
 }
 
 .enemy:hover {
