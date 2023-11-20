@@ -46,6 +46,16 @@ const app = Vue.createApp({
       this.setRoom(this.rooms[0]);
     },
     generateEnemyObjects() {
+      // Enemy class
+      class Enemy {
+        constructor(name, stats, inventory) {
+          this.name = name;
+          this.stats = stats;
+          this.inventory = inventory;
+          this.alive = true;
+        }
+      }
+      // assigns enemy objects to enemyObjects array
       this.enemyObjects = [
         new Enemy( //0
           "Slime",
@@ -374,6 +384,16 @@ const app = Vue.createApp({
       }
     },
     generateRoomObjects() {
+      // Room class
+      class Room {
+        constructor(name, enemies, positions) {
+          this.name = name;
+          this.enemies = enemies;
+          this.positions = positions;
+          this.selected = false;
+        }
+      }
+      // assigns room objects to roomObjects array
       this.roomObjects = [
         new Room(
           //0
