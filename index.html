@@ -39,14 +39,20 @@
                     </section>
                     <section id="main">
                         <h2> {{character.name}} </h2>
-                        <div v-for="(stat, name) in character.stats">
-                            <p><span>{{ name }}: </span><span>{{ stat }}</span></p>
+                        <div>
+                            <div v-for="(stat, name) in character.stats">
+                                <p><span>{{ name }}: </span><span>{{ stat }}</span></p>
+                            </div>
+                            <div>
+                                <h3>Equipment</h3>
+                                <p v-for="(item, name) in character.equipment">{{name}}: {{item.name}}</p>
+                            </div>
                         </div>
                     </section>
                     <section id="inv">
                         <h2>Inventory</h2>
                         <div class="invItem" v-for="(item) in character.inventory">
-                            <p v-for="(itemProperty, name) of item">{{ name }}: {{itemProperty}}</p>
+                            <p v-for="(itemProperty, name) of item" @click="useItem(item)">{{ name }}: {{itemProperty}}</p>
                         </div>
                     </section>
                 </div>
@@ -66,8 +72,6 @@
             </div>
         </div>
 
-        <script src="assets/enemy.js"></script>
-        <script src="assets/rooms.js"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
         <script src="assets/script.js"></script>
     </body>

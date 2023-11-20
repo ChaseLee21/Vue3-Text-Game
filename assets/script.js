@@ -12,14 +12,32 @@ const app = Vue.createApp({
         stats: {
           Health: 100,
           Attack: 0,
-          Defense: 10,
+          Defense: 0,
+          Poison: {
+            active: false,
+            damage: 0,
+            length: 0,
+          }
         },
-        inventory: [
-          {
+        equipment: {
+          weapon: {
             name: "Copper Short Sword",
             attack: 1,
           },
-        ],
+          helm: {
+            name: "Tattered Cap",
+            defense: 1,
+          },
+          chestplate: {
+            name: "Tattered Shirt",
+            defense: 1,
+          },
+          pants: {
+            name: "Tattered Pants",
+            defense: 1,
+          }
+        },
+        inventory: [],
       },
       log: [],
       rooms: [],
@@ -39,7 +57,7 @@ const app = Vue.createApp({
       //     this.character.name = heroName;
       // }
       this.started = true;
-      this.character.stats.Attack = this.calculateCharacterAttack();
+      this.calculateCharacterStats();
       this.log.push("Welcome to the game!");
       this.initializeMap();
       this.initializeRooms();
@@ -82,7 +100,9 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "potion",
               name: "Skeever Tail",
+              heal: 2,
             },
           ]
         ),
@@ -96,7 +116,9 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "helm",
               name: "Skull Helmet",
+              defense: 2,
             },
           ]
         ),
@@ -111,7 +133,9 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "weapon",
               name: "Rusty Shank",
+              attack: 2,
             },
           ],
         ),
@@ -127,7 +151,9 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "potion",
               name: "Frostbite Venom",
+              poison: [2, 2]
             },
           ],
         ),
@@ -140,10 +166,14 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "weapon",
               name: "Gimli's Axe",
+              attack: 4,
             },
             {
+              type: "chestplate",
               name: "Gimli's Chestplate",
+              defense: 4,
             },
           ],
         ),
@@ -546,6 +576,11 @@ const app = Vue.createApp({
       }
     },
     initializeMap() {
+      //generates a 10x10 2D array of x's and sets the start and end points
+      //then generates random points that connect the start and end points
+      //it then validates the map and regenerates it if needed
+      //once finished, it saves the map to the global map variable which i used for room generation
+
       //local variables
       let map = [];
       let currentPos = [];
@@ -727,10 +762,16 @@ const app = Vue.createApp({
       this.roomCount = roomCount + 1;
     },
     initializeRooms() {
-      let rooms = [];
-      for (let i = 0; i < this.roomCount - 1; i++) {
-        // i = room number
-        let availableRooms = [];
+      //generates the rooms after the map is created
+      //each room object has a position property, this property is used to determine where the room can be on the map
+      //ex. if the room has a position property of [3,4,5] then the room can be room #3, #4, or #5 
+
+
+      let rooms = []; //array that holds the rooms in order of position
+      //itterates through each room number but the last one
+      for (let i = 0; i < this.roomCount - 1; i++) { // i = room number
+        let availableRooms = []; // array that holds all available rooms for the current room number
+        //if the first 10 rooms, the room position property must include the room number
         if (i <= 10) {
           for (let room of this.roomObjects) {
             if (room.positions.includes(i) && !room.selected) {
@@ -738,28 +779,30 @@ const app = Vue.createApp({
               availableRooms.push(room);
             }
           }
+        //if the room number is greater than 10, than the room position property can include the room number or 11
         } else if (i > 10) {
           for (let room of this.roomObjects) {
-            if (room.positions.includes(11) && !room.selected) {
+            if ((room.positions.includes(11) && !room.selected) || (room.positions.includes(i) && !room.selected)) {
               room.position = i;
               availableRooms.push(room);
             }
           }
         }
+        //if there are available rooms, then a random room is selected and added to the rooms array
         if (availableRooms.length > 0) {
-          let room =
-            availableRooms[Math.floor(Math.random() * availableRooms.length)];
+          let room = availableRooms[Math.floor(Math.random() * availableRooms.length)];
           room.selected = true;
           rooms.push(room);
+          //if there are no available rooms, then the room number is logged to the console for debugging
         } else {
           console.log("error: no available rooms", i);
         }
       }
-      this.roomObjects[15].position = this.roomCount - 1; //sets the final room's position to the final room
-      rooms.push(this.roomObjects[15]); //adds the final room to the rooms array
-      // for (let room of rooms) {
-      //     console.log(room.name, room.position, room.enemies);
-      // }
+      //sets the final room's position to the final room
+      this.roomObjects[15].position = this.roomCount - 1; 
+      //adds the final room to the rooms array
+      rooms.push(this.roomObjects[15]);
+      //sets the global rooms variable to the rooms array
       this.rooms = rooms;
     },
     setRoom(room) {
@@ -793,18 +836,34 @@ const app = Vue.createApp({
         }
       }
     },
-    calculateCharacterAttack() {
-      //TODO: refactor this for use with enemies as well
-      let attack = this.character.stats.Attack;
-      for (let item of this.character.inventory) {
-        if (item.attack) {
-          attack += item.attack;
+    calculateCharacterStats() {
+      let attack = 0;
+      let defense = 0;
+      for (let equipment of Object.values(this.character.equipment)) {
+        if (equipment.attack) {
+          attack += equipment.attack;
+        }
+        if (equipment.defense) {
+          defense += equipment.defense;
         }
       }
-      return attack;
+      this.character.stats.Attack = attack;
+      this.character.stats.Defense = defense;
     },
     attackEnemy(enemy) {
+      //weapon damage
       enemy.stats.Health -= this.character.stats.Attack;
+      //poison damage
+      let poison = this.character.stats.Poison;
+      if (poison.active) {
+        enemy.stats.Health -= poison.damage;
+        poison.length--;
+        if (poison.length <= 0) {
+          poison.active = false;
+          poison.damage = 0;
+          poison.length = 0;
+        }
+      }
       if (enemy.alive == false) {
         return;
       } else if (enemy.stats.Health <= 0 && enemy.alive != false) {
@@ -845,6 +904,50 @@ const app = Vue.createApp({
       this.log.unshift(`${this.character.name} looted ${item.name}!`);
       this.removeEnemy(enemy);
     },
+    useItem(item) {
+      if (item.type === "weapon") {
+        this.character.equipment.weapon = item;
+        this.calculateCharacterStats();
+        this.log.unshift(
+          `${this.character.name} equipped ${item.name}!`
+        );
+      }
+      if (item.type === "helm") {
+        this.character.equipment.helm = item;
+        this.calculateCharacterStats();
+        this.log.unshift(
+          `${this.character.name} equipped ${item.name}!`
+        );
+      }
+      if (item.type === "chestplate") {
+        this.character.equipment.chestplate = item;
+        this.calculateCharacterStats();
+        this.log.unshift(
+          `${this.character.name} equipped ${item.name}!`
+        );
+      }
+      if (item.type === "pants") {
+        this.character.equipment.pants = item;
+        this.calculateCharacterStats();
+        this.log.unshift(
+          `${this.character.name} equipped ${item.name}!`
+        );
+      }
+      if (item.type === "potion") {
+        if (item.heal) {
+          this.character.stats.Health += item.heal;
+          this.log.unshift(
+            `${this.character.name} healed for ${item.heal} health!`
+          );
+        }
+        if (item.poison) {
+          this.character.stats.Poison.active = true;
+          this.character.stats.Poison.damage = item.poison[0];
+          this.character.stats.Poison.length = item.poison[1];
+        }
+      }
+      this.character.inventory.splice(this.character.inventory.indexOf(item), 1);
+    }
   },
 });
 app.mount("#app");
