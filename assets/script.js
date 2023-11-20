@@ -17,6 +17,12 @@ const app = Vue.createApp({
             active: false,
             damage: 0,
             length: 0,
+          },
+          Fire: 0,
+          equipFire: 0,
+          resist: {
+            poison: false,
+            fire: false,
           }
         },
         equipment: {
@@ -45,6 +51,7 @@ const app = Vue.createApp({
             length: 0,
             name: ""
           },
+          fire: 0
         },
       },
       log: [],
@@ -89,7 +96,6 @@ const app = Vue.createApp({
             Health: 20,
             Attack: 1,
             Defense: 0,
-            Hit: 1,
             Poison: true,
             Fire: true,
           },
@@ -122,7 +128,6 @@ const app = Vue.createApp({
             Health: 8,
             Attack: 1,
             Defense: 1,
-            Hit: 0.5,
           },
           [
             {
@@ -138,7 +143,6 @@ const app = Vue.createApp({
             Health: 6,
             Attack: 1,
             Defense: 0,
-            Hit: 0.5,
             Poison: {
               damage: 1,
               length: 2,
@@ -159,7 +163,6 @@ const app = Vue.createApp({
             Health: 4,
             Attack: 0.5,
             Defense: 0,
-            Hit: 0.25,
             Poison: {
               damage: 2,
               length: 2,
@@ -187,12 +190,12 @@ const app = Vue.createApp({
             {
               type: "weapon",
               name: "Gimli's Axe",
-              attack: 4,
+              attack: 3,
             },
             {
               type: "chestplate",
               name: "Gimli's Chestplate",
-              defense: 4,
+              defense: 2,
             },
           ],
         ),
@@ -203,7 +206,6 @@ const app = Vue.createApp({
             Health: 5,
             Attack: 2,
             Defense: 1,
-            Hit: 0.6,
           },
           [
             {
@@ -220,7 +222,6 @@ const app = Vue.createApp({
             Health: 10,
             Attack: 2,
             Defense: 0,
-            Hit: 0.6,
             Heal: 4,
           },
           [
@@ -242,13 +243,14 @@ const app = Vue.createApp({
           "Gargoyle",
           {
             Health: 10,
-            Attack: 2,
-            Defense: 2,
-            Hit: 0.7,
+            Attack: 4,
+            Defense: 1,
           },
           [
             {
+              type: "weapon",
               name: "Gargoyle's Sword",
+              attack: 4,
             },
           ],
         ),
@@ -257,14 +259,18 @@ const app = Vue.createApp({
           "Goblin King",
           {
             Health: 20,
-            Attack: 4,
-            Defense: 2,
-            Hit: 0.8,
-            Poison: true,
+            Attack: 3,
+            Defense: 1,
+            Poison: {
+              damage: 3,
+              length: 2,
+            },
           },
           [
             {
-              name: "Goblin King's Chestplate",
+              type: "helm",
+              name: "Goblin King's Crown",
+              defense: 3,
             },
           ],
         ),
@@ -275,14 +281,21 @@ const app = Vue.createApp({
             Health: 10,
             Attack: 2,
             Defense: 1,
-            Hit: 0.6,
           },
           [
             {
-              name: "Bandit's Helmet",
+              type: "weapon",
+              name: "Bandit's Shiv",
+              damage: 2,
+              poison: {
+                damage: 1,
+                length: 1,
+              },
             },
             {
+              type: "pants",
               name: "Bandit's Pantaloon's",
+              defense: 2,
             },
           ],
         ),
@@ -293,12 +306,17 @@ const app = Vue.createApp({
             Health: 20,
             Attack: 4,
             Defense: 2,
-            Hit: 0.8,
             Heal: 4,
           },
           [
             {
-              name: "Bandit Leader's Sword",
+              type: "helm",
+              name: "Bandit Leader's Bandana",
+              defense: 2,
+              poison: {
+                damage: 1,
+                length: 1,
+              },
             },
           ],
         ),
@@ -309,12 +327,13 @@ const app = Vue.createApp({
             Health: 30,
             Attack: 6,
             Defense: 2,
-            Hit: 0.8,
             Poison: true,
           },
           [
             {
+              type: "potion",
               name: "Frostbite Queen's Venom",
+              resist: "poison"
             },
           ],
         ),
@@ -325,8 +344,12 @@ const app = Vue.createApp({
             Health: 14,
             Attack: 3,
             Defense: 3,
-            Hit: 0.6,
           },
+          [{
+            type: "potion",
+            name: "Possessed Torch",
+            fire: 5,
+          }]
         ),
         new Enemy(
           //14
@@ -337,7 +360,10 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "helm",
               name: "mysterious hood",
+              resist: "fire",
+              defense: 1
             },
           ],
         ),
@@ -352,19 +378,30 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "potion",
               name: "Health Potion",
+              heal: 5,
             },
             {
+              type: "weapon",
               name: "Gargoyle's Sword",
+              attack: 4,
             },
             {
+              type: "weapon",
               name: "Goblin Bow",
+              attack: 2,
             },
             {
-              name: "Bandit's Pantaloon's",
+              type: "potion",
+              name: "Possessed Torch",
+              fire: 5,
             },
             {
-              name: "Skull Helmet",
+              type: "weapon",
+              name: "Cleric's Staff",
+              attack: 2,
+              healX: 2,
             },
           ],
         ),
@@ -379,7 +416,14 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "weapon",
               name: "The Dark Lord's Left Hand",
+              attack: 10,
+              fire: 5,
+              poison: {
+                damage: 5,
+                length: 5,
+              }
             },
           ],
         ),
@@ -394,10 +438,14 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "potion",
               name: "Health Potion",
+              heal: 5,
             },
             {
-              name: "Demon's Helmet",
+              type: "helm",
+              name: "Demon's Skin",
+              defense: 5,
             },
           ],
         ),
@@ -413,7 +461,10 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "weapon",
               name: "Lava Worm's Fang",
+              attack: 5,
+              fire: 3,
             },
           ],
         ),
@@ -430,7 +481,10 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "chestplate",
               name: "Evil Sorcerer's Robe",
+              defense: 4,
+              fire: 2,
             },
           ],
         ),
@@ -863,8 +917,16 @@ const app = Vue.createApp({
       }
     },
     calculateCharacterStats() {
+      //calculates the character's stats based on their equipment
+      //sets the local variables to 0 then itterates through the character's equipment and adds the stats to the local variables
+      //then sets the character's stats to the local variables
       let attack = 0;
       let defense = 0;
+      let fire = 0;
+      let resist = {
+        poison: false,
+        fire: false,
+      }
       for (let equipment of Object.values(this.character.equipment)) {
         if (equipment.attack) {
           attack += equipment.attack;
@@ -872,13 +934,29 @@ const app = Vue.createApp({
         if (equipment.defense) {
           defense += equipment.defense;
         }
+        if (equipment.fire) {
+          fire += equipment.fire;
+        } 
+        if (equipment.resist) {
+          if (equipment.resist == "poison") {
+            resist.poison = true;
+          }
+          if (equipment.resist == "fire") {
+            resist.fire = true;
+          }
+        }
       }
       this.character.stats.Attack = attack;
       this.character.stats.Defense = defense;
+      this.character.stats.equipFire = fire;
+      this.character.stats.resist = resist;
     },
     attackEnemy(enemy) {
-      //weapon damage
-      enemy.stats.Health -= this.character.stats.Attack;
+      //weapon damage and fire damage
+      enemy.stats.Health -= (this.character.stats.Attack+this.character.stats.Fire+this.character.stats.equipFire);
+
+      //resets fire damage
+      this.character.stats.Fire = 0;
 
       //poison damage
       let poison = this.character.stats.Poison;
@@ -899,14 +977,17 @@ const app = Vue.createApp({
         this.log.unshift(`${enemy.name} died!`);
         enemy.alive = false;
       } else {
+        // TODO: add fire damage if conditional
         this.log.unshift(
-          `${this.character.name} attacked ${enemy.name} for ${this.character.stats.Attack} damage!`
+          `${this.character.name} attacked ${enemy.name} for ${this.character.stats.Attack} damage and ${this.character.stats.Fire} fire damage! `
         );
         //attacks the character
         this.attackCharacter(enemy);
       }
     },
     attackCharacter(enemy) {
+      //TODO: add resistances
+
       //character variable
       let character = this.character;
 
@@ -971,6 +1052,7 @@ const app = Vue.createApp({
       this.removeEnemy(enemy);
     },
     useItem(item) {
+      //if statement for each item type which equips the item to the character and removes it from the inventory
       if (item.type === "weapon") {
         this.character.equipment.weapon = item;
         this.calculateCharacterStats();
@@ -999,17 +1081,36 @@ const app = Vue.createApp({
           `${this.character.name} equipped ${item.name}!`
         );
       }
+
+      //potions are unique as the character can only use them once and each potion has a different effect
       if (item.type === "potion") {
+
+        //health potions / healing items
         if (item.heal) {
-          this.character.stats.Health += item.heal;
+          //healX is a multiplier for healing items found on weapons
+          let healX = this.character.equipment.weapon.healX;
+          if (!healX) healX = 1;
+          let healAmount = item.heal * healX;
+          this.character.stats.Health += healAmount;
           this.log.unshift(
-            `${this.character.name} healed for ${item.heal} health!`
+            `${this.character.name} healed for ${healAmount} health!`
           );
         }
+
+        //poison potions adds a poison stat to the character that deals after each attack
+        //the poison stat has a damage and length property
+        //the damage property is how much damage the poison deals
+        //the length property is how many turns the poison lasts
         if (item.poison) {
           this.character.stats.Poison.active = true;
           this.character.stats.Poison.damage = item.poison.damage;
           this.character.stats.Poison.length = item.poison.length;
+        }
+
+        //fire potions adds a fire stat to the character that adds damage to the next attack
+        //the fire stat is "bonus damage" but can be resisted by some enemies (not yet implemented)
+        if (item.fire) {
+          this.character.stats.Fire += item.fire;
         }
       }
       this.character.inventory.splice(this.character.inventory.indexOf(item), 1);

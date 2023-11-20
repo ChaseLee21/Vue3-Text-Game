@@ -21,9 +21,9 @@
                                         <p>{{name}}: {{stat}}</p>
                                     </div>
                                 </div>
-                                <div v-else v-for="item in enemy.inventory">
+                                <div v-else >
                                     <h2>{{ enemy.name }}</h2>
-                                    <p class="enemyItem" @click="lootItem(enemy, item)">{{item.name}}</p>
+                                    <p v-for="item in enemy.inventory" class="enemyItem" @click="lootItem(enemy, item)">{{item.name}}</p>
                                 </div>
                                 
                             </div>
@@ -38,15 +38,15 @@
                         </pre>
                     </section>
                     <section id="main">
-                        <h2> {{character.name}} </h2>
                         <div>
+                            <h2> {{character.name}} </h2>
                             <div v-for="(stat, name) in character.stats">
                                 <p><span>{{ name }}: </span><span>{{ stat }}</span></p>
                             </div>
-                            <div>
-                                <h3>Equipment</h3>
-                                <p v-for="(item, name) in character.equipment">{{name}}: {{item.name}}</p>
-                            </div>
+                        </div>
+                        <div>
+                            <h3>Equipment</h3>
+                            <p v-for="(item, name) in character.equipment">{{name}}: {{item.name}}</p>
                         </div>
                     </section>
                     <section id="inv">

@@ -124,14 +124,20 @@ body header button {
 #character #inv .invItem {
     transition: .5s;
     text-align: start;
-    margin: .5rem;
-    padding: 0;
     background-color: var(--bg-color);
     color: var(--text-color);
     border-radius: var(--border-radius);
     display: flex;
     flex-flow: row wrap;
-    justify-content: space-evenly;
+    justify-content: space-around;
+    width: auto;
+    margin: 0.2rem;
+}
+
+#character #inv .invItem p {
+    padding: 0.2rem;
+    width: auto;
+    margin: 0;
 }
 
 #log {
@@ -139,4 +145,11 @@ body header button {
     color: var(--text-color);
     display: flex;
     flex-flow: column wrap;
+}
+
+#main {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-evenly;
+    text-align: center;
 }
