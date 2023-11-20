@@ -38,6 +38,14 @@ const app = Vue.createApp({
           }
         },
         inventory: [],
+        debuffs: {
+          poison: {
+            active: false,
+            damage: 0,
+            length: 0,
+            name: ""
+          },
+        },
       },
       log: [],
       rooms: [],
@@ -87,7 +95,9 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "potion",
               name: "Slime Jelly",
+              fire: 5,
             },
           ]
         ),
@@ -129,7 +139,10 @@ const app = Vue.createApp({
             Attack: 1,
             Defense: 0,
             Hit: 0.5,
-            Poison: true,
+            Poison: {
+              damage: 1,
+              length: 2,
+            },
           },
           [
             {
@@ -147,13 +160,19 @@ const app = Vue.createApp({
             Attack: 0.5,
             Defense: 0,
             Hit: 0.25,
-            Poison: true,
+            Poison: {
+              damage: 2,
+              length: 2,
+            },
           },
           [
             {
               type: "potion",
               name: "Frostbite Venom",
-              poison: [2, 2]
+              poison: {
+                damage: 2,
+                length: 2,
+              }
             },
           ],
         ),
@@ -188,7 +207,9 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "weapon",
               name: "Goblin Bow",
+              attack: 2,
             },
           ],
         ),
@@ -204,10 +225,15 @@ const app = Vue.createApp({
           },
           [
             {
+              type: "weapon",
               name: "Cleric's Staff",
+              attack: 2,
+              healX: 2,
             },
             {
+              type: "potion",
               name: "Health Potion",
+              heal: 5,
             },
           ],
         ),
@@ -853,6 +879,7 @@ const app = Vue.createApp({
     attackEnemy(enemy) {
       //weapon damage
       enemy.stats.Health -= this.character.stats.Attack;
+
       //poison damage
       let poison = this.character.stats.Poison;
       if (poison.active) {
@@ -864,6 +891,8 @@ const app = Vue.createApp({
           poison.length = 0;
         }
       }
+
+      //checks if the enemy is dead
       if (enemy.alive == false) {
         return;
       } else if (enemy.stats.Health <= 0 && enemy.alive != false) {
@@ -873,19 +902,56 @@ const app = Vue.createApp({
         this.log.unshift(
           `${this.character.name} attacked ${enemy.name} for ${this.character.stats.Attack} damage!`
         );
+        //attacks the character
         this.attackCharacter(enemy);
       }
     },
     attackCharacter(enemy) {
+      //character variable
+      let character = this.character;
+
+      //weapon damage
       this.character.stats.Health -= enemy.stats.Attack;
+
+      //logs the weapon attack
       this.log.unshift(
         `${enemy.name} attacked ${this.character.name} for ${enemy.stats.Attack} damage!`
       );
+
+      //poison debuff
+      if (enemy.stats.Poison) {
+        character.debuffs.poison.active = true;
+        character.debuffs.poison.damage = enemy.stats.Poison.damage;
+        character.debuffs.poison.length = enemy.stats.Poison.length;
+        character.debuffs.poison.name = enemy.name;
+      }
+
+      //poison damage
+      if (character.debuffs.poison.active) {
+        //deal poison damage
+        character.stats.Health -= character.debuffs.poison.damage;
+        //decreases the length of the poison debuff
+        character.debuffs.poison.length--;
+        //logs the poison damage
+        this.log.unshift(
+          `${character.name} took ${character.debuffs.poison.damage} poison damage from ${character.debuffs.poison.name}!`
+        );
+        //removes the poison debuff if the length is 0
+        if (character.debuffs.poison.length <= 0) {
+          character.debuffs.poison.active = false;
+          character.debuffs.poison.damage = 0;
+          character.debuffs.poison.length = 0;
+          character.debuffs.poison.name = "";
+        }
+      }
+      
+      //checks if the character is dead
       if (this.character.stats.Health <= 0) {
         this.log.unshift(`${this.character.name} died!`);
         this.started = false;
         //TODO: add game over screen
       }
+
     },
     isRoomCompleted() {
       if (this.currentEnemies.length == 0) {
@@ -942,8 +1008,8 @@ const app = Vue.createApp({
         }
         if (item.poison) {
           this.character.stats.Poison.active = true;
-          this.character.stats.Poison.damage = item.poison[0];
-          this.character.stats.Poison.length = item.poison[1];
+          this.character.stats.Poison.damage = item.poison.damage;
+          this.character.stats.Poison.length = item.poison.length;
         }
       }
       this.character.inventory.splice(this.character.inventory.indexOf(item), 1);
