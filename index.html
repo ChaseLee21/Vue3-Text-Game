@@ -40,8 +40,22 @@
                     <section id="main">
                         <div>
                             <h2> {{character.name}} </h2>
-                            <div v-for="(stat, name) in character.stats">
-                                <p><span>{{ name }}: </span><span>{{ stat }}</span></p>
+                            <div>
+                                <h3>Stats</h3>
+                                <p v-if="character.stats.Health">Health: {{character.stats.Health}}</p>
+                                <p v-if="character.stats.Attack">Attack: {{character.stats.Attack}}</p>
+                                <p v-if="character.stats.Defense">Defense: {{character.stats.Defense}}</p>
+                                <div v-if="character.stats.Poison.active">
+                                    <span>Poison: </span>
+                                    <span>{{character.stats.Poison.damage}} poison damage, </span>
+                                    <span>next {{character.stats.Poison.length}} attack(s)</span>
+                                </div>
+                                <div v-if="character.stats.Fire || character.stats.equipFire">
+                                    <span>Fire: </span>
+                                    <span>{{character.stats.Fire + character.stats.equipFire}} fire damage on next attack</span>
+                                </div>
+                                <p v-if="character.stats.resist.poison">Resistant to poison damage</p>
+                                <p v-if="character.stats.resist.fire">Resistant to fire damage</p>
                             </div>
                         </div>
                         <div>
