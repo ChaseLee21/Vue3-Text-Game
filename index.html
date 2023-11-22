@@ -15,17 +15,25 @@
                     <div id="enemyBoard">
                         <div v-for="enemy in currentEnemies"> 
                             <div class="enemy" >
-                                <div v-if="enemy.alive" @click="attackEnemy(enemy)">
+                                <div v-if="enemy.alive && enemy.stats.Friendly != true" @click="attackEnemy(enemy)">
                                     <h2>{{ enemy.name }}</h2>
-                                    <div  v-for="(stat, name) in enemy.stats">
-                                        <p>{{name}}: {{stat}}</p>
+                                    <p v-if="enemy.stats.Health">Health: {{enemy.stats.Health}}</p>
+                                    <p v-if="enemy.stats.Attack">Attack: {{enemy.stats.Attack}}</p>
+                                    <p v-if="enemy.stats.Defense">Defense: {{enemy.stats.Defense}}</p>
+                                    <div v-if="enemy.stats.Poison">
+                                        <span>Poison: </span>
+                                        <span>{{enemy.stats.Poison.damage}} poison damage for </span>
+                                        <span>next {{enemy.stats.Poison.length}} turns</span>
                                     </div>
-                                </div>
-                                <div v-else >
-                                    <h2>{{ enemy.name }}</h2>
-                                    <p v-for="item in enemy.inventory" class="enemyItem" @click="lootItem(enemy, item)">{{item.name}}</p>
-                                </div>
-                                
+                                    <div v-if="enemy.stats.Fire">
+                                        <span>Fire: </span>
+                                        <span>{{enemy.stats.Fire}} fire damage on next attack</span>
+                                    </div>
+                                    </div>
+                                    <div v-else >
+                                        <h2>{{ enemy.name }}</h2>
+                                        <p v-for="item in enemy.inventory" class="enemyItem" @click="lootItem(enemy, item)">{{item.name}}</p>
+                                    </div>
                             </div>
                         </div>
                     </div>

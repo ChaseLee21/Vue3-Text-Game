@@ -457,7 +457,7 @@ const app = Vue.createApp({
             Attack: 6,
             Defense: 2,
             Hit: 0.75,
-            Fire: true,
+            Fire: 3,
           },
           [
             {
